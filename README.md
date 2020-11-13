@@ -87,5 +87,61 @@ it("Should get the message Hello", async () => {
 
 ### Explain a setup for Express/Node/Test/Mongo-DB development with Typescript, and how it handles "secret values",  debug and testing.
 
-TBD
+Before each test we insert the test data in a database. We use BCrypt to hash the passwords
+
+```javascript
+
+beforeEach(async () => {
+
+    if (userCollection === null) {
+      throw new Error("userCollection not set")
+    }
+    await userCollection.deleteMany({})
+    const secretHashed = await bryptAsync("secret");
+    await userCollection.insertMany([
+      { name: "Peter Pan", userName: "pp@b.dk", password: secretHashed, role: "user" },
+      { name: "Donald Duck", userName: "dd@b.dk", password: secretHashed, role: "user" },
+      { name: "admin", userName: "admin@a.dk", password: secretHashed, role: "admin" }
+    ])
+  })
+```
+
+We can then do your assertions
+
+```javascript
+
+  it("Should Add the user Kurt", async () => {
+    const newUser = { name: "Jan Olsen", userName: "jo@b.dk", password: "secret", role: "user" }
+    try {
+      const status = await UserFacade.addUser(newUser);
+      expect(status).to.be.equal("User was added")
+
+      if (userCollection === null) {
+        throw new Error("Collection was null")
+      }
+      const jan = await userCollection.findOne({ userName: "jo@b.dk" })
+      expect(jan.name).to.be.equal("Jan Olsen")
+    } catch (err) {
+    } finally { }
+  })
+  
+    it("Should remove the user Peter", async () => {
+    try {
+      const status = await UserFacade.deleteUser("pp@b.dk");
+      expect(status).to.be.equal("User was deleted");
+
+      if (userCollection === null) {
+        throw new Error("Collection was null");
+      }
+
+      const users = await UserFacade.getAllUsers();
+      expect(users.length).to.be.equal(3)
+
+    } catch (error) {
+      debug(error);  
+    }
+
+  })
+  
+```
 
