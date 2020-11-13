@@ -153,12 +153,130 @@ We can then do the assertions
 ### Explain, your chosen strategy to deploy a Node/Express application including how to solve the following deployment problems:
 
 **- Ensure that you Node-process restarts after a (potential) exception that closed the application**
+
 **- Ensure that you Node-process restarts after a server (Ubuntu) restart**
+
 **- Ensure that you can run “many” node-applications on a single droplet on the same port (80)**
 
 
-Explain, using relevant examples, the Express concept; middleware.
-Explain, using relevant examples, your strategy for implementing a REST-API with Node/Express  + TypeScript and demonstrate how you have tested the API.
-Explain, using relevant examples, how to test JavaScript/Typescript Backend Code, relevant packages (Mocha, Chai etc.) and how to test asynchronous code.
+### Explain, using relevant examples, the Express concept; middleware.
+
+Middleware in express are functions you can use to make a request/response cycle. 
+
+For example we have this basic authentication function:
+
+```javascript
+var authMiddleware = async function (req: any, res: Response, next: Function) {
+  var credentials = auth(req)
+
+  try {
+    if (credentials && await UserFacade.checkUser(credentials.name, credentials.pass)) {
+      
+      const user = await UserFacade.getUser(credentials.name)
+      req.userName = user.userName;
+      req.role = user.role;
+      return next();
+    }
+  } catch (err) {
+    console.log("UPS")
+  }
+  res.statusCode = 401
+  res.setHeader('WWW-Authenticate', 'Basic realm="example"')
+  res.end('Access denied')
+}
+
+```
+
+The key function argument here is the next argument. If the current middleware function does not end the request-response cycle, it must call next() to pass control to the next middleware function. Otherwise, the request will be left hanging.
+
+The authentication middleware can then be used to log a user in to a webpage. If the user doesn't enter a wrong username/password combination, it returns next()
+and the request-response cycle continues and we can send the user to their profile page for example.
+
+We can do the same thing for logging.
+
+
+### Explain, using relevant examples, your strategy for implementing a REST-API with Node/Express  + TypeScript and demonstrate how you have tested the API.
+
+Here we use chai to test our endpoints:
+
+```javascript
+
+describe("Create/Update Comments", function () {
+  //Change mocha's default timeout, since we are using a "slow" remote database for testing
+  this.timeout(Number(process.env["MOCHA_TIMEOUT"]));
+  let URL: string;
+  before((done) => {
+    process.env["PORT"] = TEST_PORT;
+    process.env["SKIP_AUTHENTICATION"] = "1";
+    process.env["DB_NAME"] = "semester_case_test"
+    server = require("../src/app").server;
+    URL = `http://localhost:${process.env.PORT}`;
+    done();
+  })
+
+
+  beforeEach(async function () {
+    //Observe, no use of facade, but operates directly on connection
+    const client = await getConnectedClient();
+    const db = client.db(process.env.DB_NAME)
+
+    const usersCollection = db.collection("users")
+    await usersCollection.deleteMany({})
+    const secretHashed = await bryptAsync("secret");
+    const status = await usersCollection.insertMany([
+      { name: "Peter Pan", userName: "pp@b.dk", password: secretHashed, role: "user" },
+      { name: "Donald Duck", userName: "dd@b.dk", password: secretHashed, role: "user" },
+      { name: "admin", userName: "admin@a.dk", password: secretHashed, role: "admin" }
+    ])
+  })
+
+  after(async () => {
+    // DONT CALL THIS. Will make additonal tests fail -->server.close();
+  })
+
+  it("Should get the message Hello", async () => {
+    const result = await fetch(`${URL}/api/dummy`).then(r => r.json());
+    expect(result.msg).to.be.equal("Hello")
+  })
+
+  it("Should get three users", async () => {
+    const result = await fetch(`${URL}/api/users`).then(r => r.json());
+    expect(result.length).to.be.equal(3);
+
+```
+
+
+
+
+
+### Explain, using relevant examples, how to test JavaScript/Typescript Backend Code, relevant packages (Mocha, Chai etc.) and how to test asynchronous code.
+
+Here we use Chai to test our backend db code.
+
+```javascript
+beforeEach(async () => {
+    const hash: string = await bryptAsync("secret");
+
+    UserFacade.users = [
+      { name: "Peter Pan", userName: "pp@b.dk", password: hash, role: "user" },
+      { name: "Donald Duck", userName: "dd@b.dk", password: hash, role: "user" },
+      { name: "admin", userName: "admin@a.dk", password: hash, role: "admin" }
+    ]
+  })
+
+  after(async () => {
+    server.close();
+  })
+
+  it("Should get the message Hello", async () => {
+    const result = await fetch(`${URL}/api/dummy`).then(r => r.json());
+    expect(result.msg).to.be.equal("Hello")
+  })
+
+  it("Should get three users", async () => {
+    const result = await fetch(`${URL}/api/users`).then(r => r.json());
+    expect(result.length).to.be.equal(3);
+
+```
 
 
