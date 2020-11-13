@@ -279,4 +279,30 @@ beforeEach(async () => {
 
 ```
 
+### Explain, generally, what is meant by a NoSQL database.
+
+NoSQL databases, or non-relational databases, can be document based, graph databases, key-value pairs, or wide-column stores. NoSQL databases don’t require any predefined schema, allowing you to work more freely with “unstructured data.” 
+
+### Explain Pros & Cons in using a NoSQL database like MongoDB as your data store, compared to a traditional Relational SQL Database like MySQL.
+
+Relational databases are vertically scalable, but usually more expensive, whereas the horizontal scaling nature of NoSQL databases is more cost-efficient.
+
+Horizontal scaling means scaling by adding more machines to your pool of resources (also described as “scaling out”), whereas vertical scaling refers to scaling by adding more power (e.g. CPU, RAM) to an existing machine (also described as “scaling up”).
+
+Scaling a NoSQL database is much cheaper, compared to a relational database, because you can add capacity by scaling horizontally over cheap, commodity servers. 
+
+NoSQL databases tend to be more a part of the open-source community. Relational databases are typically closed source with licensing fees baked into the use of their software. 
+
+https://www.section.io/blog/scaling-horizontally-vs-vertically/
+
+### Explain about indexes in MongoDB, how to create them, and demonstrate how you have used them.
+
+
+
+### Explain, using your own code examples, how you have used some of MongoDB's "special" indexes like TTL and 2dsphere and perhaps also the Unique Index.
+
+### Demonstrate, using a REST-API designed by you, how to perform all CRUD operations on a MongoDB
+
+### Explain, using a relevant example, a full JavaScript backend including relevant test cases to test the REST-API (not on the production database)
+
 
