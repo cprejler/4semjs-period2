@@ -54,8 +54,36 @@ let errorLogger = expressWinston.errorLogger({
 ```
 
 ### Explain, using relevant examples, concepts related to testing a REST-API using Node/JavaScript/Typescript + relevant packages 
+Using the Chai framework to test endpoints:
+```javascript
 
-TBD
+it("Should get the message Hello", async () => {
+    const result = await fetch(`${URL}/api/dummy`).then(r => r.json());
+    expect(result.msg).to.be.equal("Hello")
+  })
+
+  it("Should get three users", async () => {
+    const result = await fetch(`${URL}/api/users`).then(r => r.json());
+    expect(result.length).to.be.equal(3);
+
+  })
+  it("Should Add the user Jan", async () => {
+    const newUser = { name: "Jan Olsen", userName: "jo@b.dk", password: "secret", role: "user" }
+    const config = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newUser)
+    }
+    const result = await fetch(`${URL}/api/users`, config).then(r => r.json());
+    expect(result.status).to.be.equal("User was added")
+  })
+
+```
+
+
 
 ### Explain a setup for Express/Node/Test/Mongo-DB development with Typescript, and how it handles "secret values",  debug and testing.
 
