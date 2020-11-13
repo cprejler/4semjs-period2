@@ -106,7 +106,7 @@ beforeEach(async () => {
   })
 ```
 
-We can then do your assertions
+We can then do the assertions
 
 ```javascript
 
@@ -122,6 +122,7 @@ We can then do your assertions
       const jan = await userCollection.findOne({ userName: "jo@b.dk" })
       expect(jan.name).to.be.equal("Jan Olsen")
     } catch (err) {
+      debug(err)
     } finally { }
   })
   
@@ -144,4 +145,20 @@ We can then do your assertions
   })
   
 ```
+
+### Explain, preferably using an example, how you have deployed your node/Express applications, and which of the Express Production best practices you have followed.
+
+### Explain possible steps to deploy many node/Express servers on the same droplet, how to deploy the code and how to ensure servers will continue to operate, even after a droplet restart.
+
+### Explain, your chosen strategy to deploy a Node/Express application including how to solve the following deployment problems:
+
+**- Ensure that you Node-process restarts after a (potential) exception that closed the application**
+**- Ensure that you Node-process restarts after a server (Ubuntu) restart**
+**- Ensure that you can run “many” node-applications on a single droplet on the same port (80)**
+
+
+Explain, using relevant examples, the Express concept; middleware.
+Explain, using relevant examples, your strategy for implementing a REST-API with Node/Express  + TypeScript and demonstrate how you have tested the API.
+Explain, using relevant examples, how to test JavaScript/Typescript Backend Code, relevant packages (Mocha, Chai etc.) and how to test asynchronous code.
+
 
